@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VELMORA — Premium Collections</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        body { font-family: 'Sora', sans-serif; }
+        .serif { font-family: 'Crimson Text', serif; }
+        
+        /* Fixed Hero Background */
+        .hero {
+            position: relative;
+            height: 80vh;
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                              url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        /* About Section Styling */
+        .about-section {
+            padding: 100px 20px;
+            background-color: #fcfcfc;
+            text-align: center;
+        }
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Product Card UI */
+        .product-card img {
+            transition: transform 0.5s ease;
+        }
+        .product-card:hover img {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body x-data="shopApp()" x-cloak class="bg-white">
+
+    <!-- NAVIGATION -->
+    <nav class="relative sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 px-4 md:px-8 py-5 flex flex-wrap justify-between items-center">
+        <div class="flex items-center gap-4">
+            <button @click.stop="openMobileMenu()" class="md:hidden text-black">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <div class="text-2xl font-bold tracking-tighter">VELMORA</div>
+        </div>
+        
+        <div class="hidden md:flex min-w-0 flex-1 justify-center space-x-6 text-xs uppercase tracking-[0.2em] font-semibold">
+            <a href="#products" @click="filter = 'all'" class="hover:text-gray-500 transition">Shop All</a>
+            <a href="#products" @click="filter = 'home'" class="hover:text-gray-500 transition">Home</a>
+            <a href="#products" @click="filter = 'sports'" class="hover:text-gray-500 transition">Sports</a>
+            <a href="#products" @click="filter = 'arts'" class="hover:text-gray-500 transition">Arts & Crafts</a>
+            <a href="#about" class="hover:text-gray-500 transition border-l pl-8 border-gray-200">Our Story</a>
+        </div>
+
+        <button @click="showCart = true" class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <span x-show="cart.length > 0" x-text="cart.length" class="absolute -top-2 -right-2 bg-black text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center"></span>
+        </button>
+    </nav>
+
+    <div x-show.transition.opacity="mobileMenu" x-cloak class="md:hidden fixed inset-x-0 top-16 bg-white border-b border-gray-200 z-50 shadow-lg max-h-[calc(100vh-4rem)] overflow-auto">
+        <div class="px-6 py-4 space-y-3 text-xs uppercase tracking-[0.2em] font-semibold">
+            <button @click="closeMobileMenu()" class="w-full text-left text-black uppercase tracking-[0.2em] font-semibold">Close Menu</button>
+            <a href="#products" @click="filter = 'all'; closeMobileMenu()" class="block text-black hover:text-gray-500">Shop All</a>
+            <a href="#products" @click="filter = 'home'; closeMobileMenu()" class="block text-black hover:text-gray-500">Home</a>
+            <a href="#products" @click="filter = 'sports'; closeMobileMenu()" class="block text-black hover:text-gray-500">Sports</a>
+            <a href="#products" @click="filter = 'arts'; closeMobileMenu()" class="block text-black hover:text-gray-500">Arts & Crafts</a>
+            <a href="#about" @click="closeMobileMenu()" class="block text-black hover:text-gray-500">Our Story</a>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="px-4">
+            <p class="uppercase tracking-[0.4em] text-sm mb-4 font-light">Curated for Creators</p>
+            <h1 class="text-6xl md:text-8xl font-bold mb-6 tracking-tighter">Elevate Your Craft</h1>
+            <p class="serif italic text-xl md:text-2xl mb-10 opacity-90">Premium essentials for home, sports, and creative pursuits</p>
+            <a href="#products" class="border border-white px-10 py-4 uppercase text-[10px] font-bold tracking-[0.3em] hover:bg-white hover:text-black transition duration-500">
+                Explore Collection
+            </a>
+        </div>
+    </header>
+
+    <!-- ABOUT SECTION -->
+    <section id="about" class="about-section">
+        <div class="about-container">
+            <span class="text-gray-400 uppercase tracking-[0.3em] text-[10px] font-bold">Our Philosophy</span>
+            <h2 class="serif text-4xl md:text-5xl my-6">Built on Purpose & Precision</h2>
+            <p class="text-gray-600 leading-relaxed text-lg mb-8">
+                VELMORA began with a simple observation: the tools we use every day should be as inspiring as the work we create. We bridge the gap between functional utility and high-end aesthetic.
+            </p>
+            <p class="text-gray-600 leading-relaxed text-lg italic serif">
+                "Whether it's the perfect weight of a ceramic kettle or the grip of a professional yoga mat, we believe quality is felt before it is seen."
+            </p>
+        </div>
+    </section>
+
+    <!-- PRODUCTS SECTION -->
+    <main id="products" class="max-w-7xl mx-auto px-4 md:px-8 py-24">
+        <div class="mb-16">
+            <h2 class="text-xs uppercase tracking-[0.5em] text-gray-400 mb-2" x-text="filter === 'all' ? 'The Full Gallery' : filter"></h2>
+            <div class="h-[1px] w-20 bg-black"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <template x-for="product in filteredProducts()" :key="product.id">
+                <div class="product-card group cursor-pointer">
+                    <div class="relative aspect-[4/5] overflow-hidden bg-gray-100 mb-6">
+                        <img :src="product.image" :alt="product.name" class="object-cover w-full h-full">
+                        <button @click="addToCart(product)" class="absolute bottom-0 left-0 right-0 bg-black text-white py-5 translate-y-full group-hover:translate-y-0 transition-transform duration-500 uppercase text-[10px] font-bold tracking-[0.2em]">
+                            Add to Bag
+                        </button>
+                    </div>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-sm uppercase tracking-tight" x-text="product.name"></h3>
+                            <p class="text-gray-400 text-[10px] uppercase mt-1 tracking-widest" x-text="product.category"></p>
+                        </div>
+                        <p class="font-bold text-sm" x-text="'$' + product.price"></p>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-black text-white py-20 px-4 md:px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/10 pb-16">
+            <div>
+                <h4 class="text-2xl font-bold tracking-tighter mb-6">VELMORA</h4>
+                <p class="text-gray-400 text-sm leading-relaxed">Defining the modern standard for premium everyday essentials.</p>
+            </div>
+            <div class="flex flex-col space-y-4 text-xs uppercase tracking-widest text-gray-400">
+                <span class="text-white mb-2">Shop</span>
+                <a href="#" @click="filter = 'home'">Home</a>                <a href="#" @click="filter = 'sports'">Sports</a>
+                <a href="#" @click="filter = 'arts'">Arts & Crafts</a>
+                <a href="#" @click="filter = 'sports'">Sports</a>
+                <a href="#products" @click="filter = 'arts'">Arts & Crafts</a>
+            </div>
+            <div class="flex flex-col space-y-4 text-xs uppercase tracking-widest text-gray-400">
+                <span class="text-white mb-2">Company</span>
+                <a href="#about">About</a>
+                <a href="#">Contact</a>
+                <a href="#">Careers</a>
+            </div>
+            <div>
+                <span class="text-white text-xs uppercase tracking-widest mb-6 block">Join the list</span>
+                <input type="text" placeholder="Email Address" class="bg-transparent border-b border-white/20 w-full py-2 text-sm focus:outline-none focus:border-white transition">
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto pt-8 text-[10px] uppercase tracking-widest text-gray-500 flex flex-col gap-4">
+            <p>&copy; 2026 <a href="#" class="text-gray-500 hover:text-white">VELMORA LLC</a></p>
+            <p class="flex flex-wrap gap-x-3 gap-y-2">
+                <a href="#" class="text-gray-500 hover:text-white">Privacy Policy</a>
+                <span>|</span>
+                <a href="#" class="text-gray-500 hover:text-white">Terms and Conditions</a>
+                <span>|</span>
+                <a href="#" class="text-gray-500 hover:text-white">Store/Dealer Locator</a>
+                <span>|</span>
+                <a href="#" class="text-gray-500 hover:text-white">Unauthorized Dealer Alert</a>
+                <span>|</span>
+                <a href="#" class="text-gray-500 hover:text-white">Social Responsibility</a>
+                <span>|</span>
+                <a href="#" class="text-gray-500 hover:text-white">Accessibility</a>
+                <span>|</span>
+                <a href="#" class="text-gray-500 hover:text-white">Do Not Sell My Personal Information</a>
+                <span>|</span>
+                <a href="#" class="text-gray-500 hover:text-white">Patents</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- CART MODAL -->
+    <div x-show="showCart" class="fixed inset-0 z-[100] flex justify-end" x-cloak>
+        <div @click="showCart = false" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div class="relative w-full max-w-md bg-white h-full shadow-2xl p-10 flex flex-col">
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-xl font-bold uppercase tracking-widest">Your Bag</h2>
+                <button @click="showCart = false" class="text-gray-400 hover:text-black transition">Close</button>
+            </div>
+            <div class="flex-grow overflow-y-auto">
+                <template x-for="(item, index) in cart" :key="index">
+                    <div class="flex space-x-4 mb-8">
+                        <img :src="item.image" class="w-20 h-24 object-cover bg-gray-50">
+                        <div class="flex-grow">
+                            <h4 class="font-bold text-xs uppercase" x-text="item.name"></h4>
+                            <p class="text-gray-400 text-[10px]" x-text="'$' + item.price"></p>
+                            <button @click="cart.splice(index, 1)" class="text-[10px] text-red-400 uppercase mt-4 tracking-tighter">Remove</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <div class="border-t pt-6">
+                <div class="flex justify-between font-bold text-lg mb-6 uppercase tracking-tighter">
+                    <span>Total</span>
+                    <span x-text="'$' + cart.reduce((s, i) => s + i.price, 0)"></span>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <button @click="showCart = false" class="w-full border border-gray-200 text-black py-5 text-xs font-bold uppercase tracking-widest">Continue Shopping</button>
+                    <button @click="cart = []; showCart = false; alert('Checkout Complete!')" class="w-full bg-black text-white py-5 text-xs font-bold uppercase tracking-widest">Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function shopApp() {
+            return {
+                filter: 'all',
+                showCart: false,
+                mobileMenu: false,
+                cart: [],
+                products: [
+    { 
+        id: 1, 
+        name: 'Cutlery Drawer Organizer', 
+        category: 'home', 
+        price: 25, 
+        image: 'images/cutlery_drawer_organizer.jpg' 
+    },
+    { 
+        id: 2, 
+        name: 'Natural Bamboo Cutting Board', 
+        category: 'home', 
+        price: 25, 
+        image: 'images/natural_bamboo_cutting_board.jpg' 
+    },
+    { 
+        id: 3, 
+        name: 'Watercolor Artist Palette', 
+        category: 'arts', 
+        price: 45, 
+        image: 'images/watercolor_artist_palette.jpg' 
+    },
+    { 
+        id: 4, 
+        name: 'Pro Series Dumbbells', 
+        category: 'sports', 
+        price: 180, 
+        image: 'images/pro_series_dumbbells.jpg' 
+    },
+    { 
+        id: 5, 
+        name: 'Studio Sketchbook', 
+        category: 'arts', 
+        price: 15, 
+        image: 'images/studio_sketchbook.jpg' 
+    },
+    { 
+        id: 6, 
+        name: 'Leather Boxing Gloves', 
+        category: 'sports', 
+        price: 110, 
+        image: 'images/leather_boxing_gloves.jpg' 
+    },
+    
+    { 
+        id: 7, 
+        name: 'Yoga Mat', 
+        category: 'sports', 
+        price: 25, 
+        image: 'images/yoga_mat.jpg' 
+    }
+],
+                filteredProducts() {
+                    if (this.filter === 'all') return this.products;
+                    return this.products.filter(p => p.category === this.filter);
+                },
+                addToCart(product) {
+                    this.cart.push(product);
+                },
+                openMobileMenu() {
+                    this.mobileMenu = true;
+                    setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 0);
+                },
+                closeMobileMenu() {
+                    this.mobileMenu = false;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
